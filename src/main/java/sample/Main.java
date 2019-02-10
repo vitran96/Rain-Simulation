@@ -5,19 +5,15 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 public class Main extends Application {
 
     public static final int W = 800, H = 600;
-    //Line line = new Line(W/2, 0, W/2, 20);
-    //private float speed = 3;
     List<Drop> drops;
 
     @Override
@@ -34,20 +30,23 @@ public class Main extends Application {
 
         drops = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
-            drops.add(new Drop());
+        for (int i = 0; i < 500; i++) {
+            Random rn = new Random();
+            long x = rn.nextInt(Main.W);
+            long y = -rn.nextInt(500) - 400;
+            long len = rn.nextInt(20) + 10;
+            drops.add(new Drop(x, y, x, y + len));
+
         }
 
-        //line.setStroke(Color.WHITE);
-
-        root.getChildren().addAll(drops.stream().map(Drop::getLine).collect(Collectors.toList()));
+        root.getChildren().addAll(drops);
 
         AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= 60_000_000) {
+                if (now - lastUpdate >= 2_000_000) {
                     update();
                     lastUpdate = now;
                 }
@@ -62,10 +61,6 @@ public class Main extends Application {
 
     private void update() {
         drops.stream().forEach(Drop::fall);
-//        if (line.getLayoutY() >= H)
-//            line.setLayoutY(0);
-//        else
-//            line.setLayoutY(line.getLayoutY() + speed);
     }
 
     public static void main(String[] args) {
