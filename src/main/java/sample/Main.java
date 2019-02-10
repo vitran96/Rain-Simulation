@@ -9,11 +9,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Main extends Application {
 
-    private final int W = 800, H = 600;
-    Line line = new Line(W/2, 0, W/2, 20);
-    private float speed = 3;
+    public static final int W = 800, H = 600;
+    //Line line = new Line(W/2, 0, W/2, 20);
+    //private float speed = 3;
+    List<Drop> drops;
 
     @Override
     public void start(Stage primaryStage){
@@ -27,16 +32,22 @@ public class Main extends Application {
         root.setPrefSize(W, H);
         root.setStyle("-fx-background-color: black");
 
-        line.setStroke(Color.WHITE);
+        drops = new ArrayList<>();
 
-        root.getChildren().addAll(line);
+        for (int i = 0; i < 100; i++) {
+            drops.add(new Drop());
+        }
+
+        //line.setStroke(Color.WHITE);
+
+        root.getChildren().addAll(drops.stream().map(Drop::getLine).collect(Collectors.toList()));
 
         AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= 10_000_000) {
+                if (now - lastUpdate >= 60_000_000) {
                     update();
                     lastUpdate = now;
                 }
@@ -50,10 +61,11 @@ public class Main extends Application {
     }
 
     private void update() {
-        if (line.getLayoutY() >= H)
-            line.setLayoutY(0);
-        else
-            line.setLayoutY(line.getLayoutY() + speed);
+        drops.stream().forEach(Drop::fall);
+//        if (line.getLayoutY() >= H)
+//            line.setLayoutY(0);
+//        else
+//            line.setLayoutY(line.getLayoutY() + speed);
     }
 
     public static void main(String[] args) {
